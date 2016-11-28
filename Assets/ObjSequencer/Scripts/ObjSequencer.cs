@@ -12,7 +12,7 @@ public class ObjSequencer : MonoBehaviour
     public bool loop;
     public bool autoStart;
 
-    public Mesh[] meshes;
+    public ObjClip clip;
 
     int frame;
 
@@ -43,7 +43,7 @@ public class ObjSequencer : MonoBehaviour
     {
         while (Application.isPlaying)
         {
-            if (frame >= meshes.Length)
+            if (frame >= clip.Count)
             {
                 if (loop)
                 {
@@ -54,7 +54,7 @@ public class ObjSequencer : MonoBehaviour
                     yield break;
                 }
             }
-            filter.mesh = meshes[frame];
+            clip.ApplyMesh(filter.mesh, frame);
             frame++;
             yield return new WaitForSeconds(1 / fps);
         }
