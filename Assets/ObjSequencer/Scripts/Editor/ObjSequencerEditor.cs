@@ -36,17 +36,27 @@ public class ObjSequencerEditor : Editor
                     meshes.Add(mesh);
                 }
             }
-            _target.meshes = meshes.ToArray();
+
+            ObjClip clip = ObjClip.CreateFromMeshes(meshes);
+            SaveTo(clip, ToRelativePath(folder) + ".asset");
+            _target.clip = clip;
         }
     }
 
     static string[] FindObjs(string folder)
     {
         string[] paths = System.IO.Directory.GetFiles(folder, "*.obj");
-        return paths.Select(path =>
-        {
-            // To relative path
-            return "Assets" + path.Substring(Application.dataPath.Length);
-        }).ToArray();
+        return paths.Select(path => ToRelativePath(path)).ToArray();
+    }
+
+    static string ToRelativePath(string absPath)
+    {
+        return "Assets" + absPath.Substring(Application.dataPath.Length);
+    }
+
+    static void SaveTo(ScriptableObject sobj, string path)
+    {
+        AssetDatabase.CreateAsset(sobj, path);
+        AssetDatabase.Refresh();
     }
 }
