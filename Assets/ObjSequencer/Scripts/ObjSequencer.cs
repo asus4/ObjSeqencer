@@ -20,10 +20,18 @@ public class ObjSequencer : MonoBehaviour
 
     void Start()
     {
-        filter = GetComponent<MeshFilter>();
+        filter = target.GetComponent<MeshFilter>();
         if (autoStart)
         {
             Play();
+        }
+    }
+
+    void OnValidate()
+    {
+        if (target == null)
+        {
+            target = GetComponent<MeshRenderer>();
         }
     }
 

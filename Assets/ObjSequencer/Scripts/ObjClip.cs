@@ -11,6 +11,7 @@ public class ObjClip : ScriptableObject, IEnumerable<ObjClip.Frame>
         public Vector3[] vertices;
         public Vector2[] uv;
         public int[] triangles;
+        public Vector3[] normals;
     }
 
     public Frame[] frames;
@@ -22,7 +23,7 @@ public class ObjClip : ScriptableObject, IEnumerable<ObjClip.Frame>
         mesh.vertices = frame.vertices;
         mesh.uv = frame.uv;
         mesh.triangles = frame.triangles;
-        mesh.RecalculateNormals();
+        mesh.normals = frame.normals;
     }
 
     public static ObjClip CreateFromMeshes(IEnumerable<Mesh> meshes)
@@ -36,7 +37,8 @@ public class ObjClip : ScriptableObject, IEnumerable<ObjClip.Frame>
             {
                 vertices = mesh.vertices,
                 uv = mesh.uv,
-                triangles = mesh.triangles
+                triangles = mesh.triangles,
+                normals = mesh.normals
             });
         }
         clip.frames = frames.ToArray();
