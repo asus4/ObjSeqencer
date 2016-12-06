@@ -3,24 +3,33 @@ using System.Collections;
 
 public class ObjSequencer : MonoBehaviour
 {
-    [SerializeField]
+    [SerializeField, Tooltip("Target that play models")]
     MeshRenderer target;
 
-    [RangeAttribute(1f, 60f)]
+    [Range(1f, 60f), Tooltip("Frame rate")]
     public float fps = 30f;
 
     public bool loop;
     public bool autoStart;
-
-    public ObjClip clip;
-
-    int frame;
+    // This is int, because for controll from unity animation
+    public float frame;
+ 
+    [SerializeField]
+    string filePath;
 
     MeshFilter filter;
+    ObjClip clip;
 
     void Start()
     {
         filter = target.GetComponent<MeshFilter>();
+        if (filter == null)
+        {
+            filter = target.gameObject.AddComponent<MeshFilter>();
+        }
+
+        clip = ObjClip.LoadFramesFromFile(filePath);
+
         if (autoStart)
         {
             Play();
@@ -29,10 +38,15 @@ public class ObjSequencer : MonoBehaviour
 
     void OnValidate()
     {
-        if (target == null)
-        {
-            target = GetComponent<MeshRenderer>();
-        }
+        if (target != null) return;
+        target = GetComponent<MeshRenderer>();
+        if (target != null) return;
+        target = gameObject.AddComponent<MeshRenderer>();
+    }
+
+    void Update()
+    {
+        clip.ApplyMesh(filter.mesh, (int)frame);
     }
 
     public void Play(int start = 0)
@@ -51,7 +65,7 @@ public class ObjSequencer : MonoBehaviour
     {
         while (Application.isPlaying)
         {
-            if (frame >= clip.Count)
+            if (frame >= clip.Count - 1)
             {
                 if (loop)
                 {
@@ -62,9 +76,14 @@ public class ObjSequencer : MonoBehaviour
                     yield break;
                 }
             }
-            clip.ApplyMesh(filter.mesh, frame);
             frame++;
             yield return new WaitForSeconds(1 / fps);
         }
+    }
+
+    public string FilePath
+    {
+        get { return filePath; }
+        set { filePath = value; }
     }
 }
